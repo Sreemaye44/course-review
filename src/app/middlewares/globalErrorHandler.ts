@@ -13,14 +13,13 @@ import config from "../config";
 const app: Application = express();
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  //setting defaultg values
+  //setting default values
 
   let statusCode = 500;
   let message = "something went wrong!";
 
-  let errorSources: TErrorSource = [
+  let errorMessage: TErrorSource = [
     {
-      path: "",
       message: "Something went wrong",
     },
   ];
@@ -28,36 +27,35 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     const simplifiedError = handleZodError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorMessage = simplifiedError?.errorMessage;
   } else if (err?.name === "ValidationError") {
     const simplifiedError = handleValidationError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorMessage = simplifiedError?.errorMessage;
   } else if (err?.name === "CastError") {
+    console.log("🚀 ~ file: globalErrorHandler.ts:40 ~ err:", err);
     const simplifiedError = handleCastError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    // errorDetails = simplifiedError?.errorSources;
   } else if (err?.code === 11000) {
     const simplifiedError = handleDuplicateError(err);
     statusCode = simplifiedError?.statusCode;
     message = simplifiedError?.message;
-    errorSources = simplifiedError?.errorSources;
+    errorMessage = simplifiedError?.errorMessage;
   } else if (err instanceof AppError) {
     statusCode = err?.statusCode;
     message = err?.message;
-    errorSources = [
+    errorMessage = [
       {
-        path: "",
         message: err?.message,
       },
     ];
   } else if (err instanceof Error) {
     message = err?.message;
-    errorSources = [
+    errorMessage = [
       {
-        path: "",
         message: err?.message,
       },
     ];
@@ -66,9 +64,9 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   return res.status(statusCode).json({
     success: false,
     message,
-    errorSources,
-    err,
-    stack: config.NODE_ENV === "development" ? err?.stack : null,
+    errorMessage,
+    errorDetails: err,
+    stack: err?.stack,
   });
 };
 export default globalErrorHandler;
