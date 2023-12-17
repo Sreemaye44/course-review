@@ -5,8 +5,9 @@ import { courseControllers } from "./course.controller";
 const router = express.Router();
 router.post(
   "/course",
-  //   validateRequest(CourseSchemaValidation.createCourseSchemaValidation),
+  validateRequest(CourseSchemaValidation.createCourseSchemaValidation),
   courseControllers.createCourse
 );
+router.get("/courses", courseControllers.getAllCourses);
 
 export const CourseRoutes = router;
