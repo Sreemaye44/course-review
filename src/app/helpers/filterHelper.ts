@@ -14,7 +14,16 @@ export const filter = <T>(
     "sortOrder",
     "fields",
   ];
-  const { minPrice, maxPrice, sortBy, tags, level, ...restQuery } = queryObj;
+  const {
+    minPrice,
+    maxPrice,
+    sortBy,
+    tags,
+    level,
+    startDate,
+    endDate,
+    ...restQuery
+  } = queryObj;
   excludedFields.forEach((keyword) => delete queryObj[keyword]);
 
   modelQuery = modelQuery.find(restQuery);
@@ -32,6 +41,18 @@ export const filter = <T>(
   }
   if (level !== undefined) {
     modelQuery = modelQuery.find({ "details.level": level });
+  }
+  if (startDate !== undefined || endDate !== undefined) {
+    const dateFilter: Record<string, any> = {};
+    if (startDate !== undefined) {
+      dateFilter.$gte = startDate;
+    }
+    if (endDate !== undefined) {
+      dateFilter.$lte = endDate;
+    }
+    modelQuery = modelQuery.find({
+      $and: [{ startDate: dateFilter }, { endDate: dateFilter }],
+    });
   }
 
   if (sortBy !== undefined) {
