@@ -9,5 +9,10 @@ router.post(
   courseControllers.createCourse
 );
 router.get("/courses", courseControllers.getAllCourses);
+router.put(
+  "/courses/:_id",
+  validateRequest(CourseSchemaValidation.updateCourseSchemaValidation),
+  courseControllers.updateCourse
+);
 
 export const CourseRoutes = router;

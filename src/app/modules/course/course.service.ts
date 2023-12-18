@@ -11,7 +11,57 @@ const getAllCoursesFromDB = async (payload: any) => {
   const result = await filter(Course.find(), payload);
   return result;
 };
+
+const updateCourseintoDB = async (id: string, payload: Partial<TCourse>) => {
+  const { details, tags, ...remainingCourseData } = payload;
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingCourseData,
+  };
+  if (details && Object.keys(details).length) {
+    for (const [key, value] of Object.entries(details)) {
+      modifiedUpdatedData[`details.${key}`] = value;
+    }
+  }
+  const updateWithoutTags = await Course.findOneAndUpdate(
+    { id },
+    modifiedUpdatedData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (tags && tags.length > 0) {
+    //filter out the deleted fields
+    const deletedTags = tags
+      ?.filter((el: any) => el.name && el.isDeleted)
+      .map((el) => el.name);
+
+    const deletedTagNames = await Course.findOneAndUpdate(
+      { id },
+      {
+        $pull: { tags: { name: { $in: deletedTags } } },
+      }
+    );
+    //filter out the new course fields
+
+    const newTags = tags?.filter((el) => el.name && !el.isDeleted);
+    const newTagsName = await Course.findOneAndUpdate(
+      { id },
+      {
+        $addToSet: { tags: { $each: newTags } },
+      }
+    );
+
+    //   // modifiedUpdatedData["tags"] = tags;
+  }
+
+  const result = await Course.find({ id });
+
+  return result;
+};
 export const CourseServices = {
   createCourseIntoDB,
   getAllCoursesFromDB,
+  updateCourseintoDB,
 };

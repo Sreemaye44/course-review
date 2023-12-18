@@ -41,7 +41,7 @@ const createCourseSchemaValidation = z.object({
     tags: z.array(
       z.object({
         name: z.string(),
-        isDeleted: z.boolean(),
+        isDeleted: z.boolean().optional(),
       })
     ),
     startDate: z.string(),
@@ -50,7 +50,7 @@ const createCourseSchemaValidation = z.object({
     provider: z.string(),
     details: z.object({
       level: z.enum(["Beginner", "Intermediate", "Advanced"]),
-      description: z.string(),
+      description: z.string().optional(),
     }),
   }),
 
