@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 export type TTags = {
   name: string;
   isDeleted: boolean;
+  _id: string;
 };
 export type TDetails = {
   level: string;

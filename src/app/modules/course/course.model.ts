@@ -2,10 +2,13 @@ import { Schema, model } from "mongoose";
 import { TCourse, TDetails, TTags } from "./course.interface";
 
 // Define the schema for Tags
-const tagsSchema = new Schema<TTags>({
-  name: { type: String, required: true },
-  isDeleted: { type: Boolean, default: false },
-});
+const tagsSchema = new Schema<TTags>(
+  {
+    name: { type: String, required: true },
+    isDeleted: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
 
 // Define the schema for Details
 const detailsSchema = new Schema<TDetails>({

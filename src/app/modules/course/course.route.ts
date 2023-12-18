@@ -9,8 +9,9 @@ router.post(
   courseControllers.createCourse
 );
 router.get("/courses", courseControllers.getAllCourses);
+router.get("/courses/:courseId", courseControllers.getSingleCourse);
 router.put(
-  "/courses/:_id",
+  "/courses/:courseId",
   validateRequest(CourseSchemaValidation.updateCourseSchemaValidation),
   courseControllers.updateCourse
 );
