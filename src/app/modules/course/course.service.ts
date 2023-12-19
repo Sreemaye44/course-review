@@ -63,7 +63,6 @@ const updateCourseintoDB = async (id: string, payload: Partial<TCourse>) => {
 };
 
 const getSingleCourseFromDB = async (id: string) => {
-  console.log(id);
   const result = await Course.aggregate([
     { $match: { _id: mongoose.Types.ObjectId.createFromHexString(id) } },
     {
@@ -78,9 +77,42 @@ const getSingleCourseFromDB = async (id: string) => {
   return result;
 };
 
+const getBestCourseFromDB = async () => {
+  const result = await Course.aggregate([
+    {
+      $lookup: {
+        from: "reviews",
+        localField: "_id",
+        foreignField: "courseId",
+        as: "reviews",
+      },
+    },
+    {
+      $addFields: {
+        averageRating: { $avg: "$reviews.rating" },
+        reviewCount: { $size: "$reviews" },
+      },
+    },
+    {
+      $unset: "reviews",
+    },
+    {
+      $sort: {
+        averageRating: -1,
+        reviewCount: -1,
+      },
+    },
+    {
+      $limit: 1,
+    },
+  ]);
+  return result;
+};
+
 export const CourseServices = {
   createCourseIntoDB,
   getAllCoursesFromDB,
   updateCourseintoDB,
   getSingleCourseFromDB,
+  getBestCourseFromDB,
 };

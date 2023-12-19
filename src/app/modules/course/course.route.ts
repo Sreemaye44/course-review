@@ -10,6 +10,7 @@ router.post(
 );
 router.get("/courses", courseControllers.getAllCourses);
 router.get("/courses/:courseId/reviews", courseControllers.getSingleCourse);
+router.get("/course/best", courseControllers.getBestCourse);
 router.put(
   "/courses/:courseId",
   validateRequest(CourseSchemaValidation.updateCourseSchemaValidation),

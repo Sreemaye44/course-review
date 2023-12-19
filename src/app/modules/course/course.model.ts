@@ -11,29 +11,35 @@ const tagsSchema = new Schema<TTags>(
 );
 
 // Define the schema for Details
-const detailsSchema = new Schema<TDetails>({
-  level: {
-    type: String,
-    required: true,
-    enum: ["Beginner", "Intermediate", "Advanced"],
+const detailsSchema = new Schema<TDetails>(
+  {
+    level: {
+      type: String,
+      required: true,
+      enum: ["Beginner", "Intermediate", "Advanced"],
+    },
+    description: { type: String, required: true },
   },
-  description: { type: String, required: true },
-});
+  { _id: false }
+);
 
 // Define the schema for Course
-const courseSchema = new Schema<TCourse>({
-  title: { type: String, required: true, unique: true },
-  instructor: { type: String, required: true },
-  categoryId: { type: Schema.Types.ObjectId, ref: "CategoryId" },
-  price: { type: Number, required: true },
-  tags: [tagsSchema], // Array of tags based on the previously defined schema
-  startDate: { type: String, required: true },
-  endDate: { type: String, required: true },
-  language: { type: String, required: true },
-  provider: { type: String, required: true },
-  durationInWeeks: { type: Number },
-  details: detailsSchema, // Details object based on the previously defined schema
-});
+const courseSchema = new Schema<TCourse>(
+  {
+    title: { type: String, required: true, unique: true },
+    instructor: { type: String, required: true },
+    categoryId: { type: Schema.Types.ObjectId, ref: "CategoryId" },
+    price: { type: Number, required: true },
+    tags: [tagsSchema], // Array of tags based on the previously defined schema
+    startDate: { type: String, required: true },
+    endDate: { type: String, required: true },
+    language: { type: String, required: true },
+    provider: { type: String, required: true },
+    durationInWeeks: { type: Number },
+    details: detailsSchema, // Details object based on the previously defined schema
+  },
+  { versionKey: false }
+);
 
 courseSchema.pre("save", async function (next) {
   const course = this;
