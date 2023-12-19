@@ -83,16 +83,13 @@ export const filter = async <T>(
   const page = parseInt(rawPage, 10);
   const limit = parseInt(rawLimit, 10);
 
-  const clonedQuery = modelQuery.clone(); // Clone the query to get total count
-  const totalQuery = await clonedQuery.model.countDocuments();
-
   const startIndex = (page - 1) * limit;
-  // Calculate the starting index for pagination
+
   const data = await modelQuery.skip(startIndex).limit(limit);
   const metaData = {
     page,
     limit,
-  }; // Apply pagination
+  };
 
   return {
     data,
