@@ -66,18 +66,18 @@ export const filter = async <T>(
   }
 
   if (sortBy !== undefined && sortOrder !== undefined) {
-    const allowedSortFields: Record<string, 1 | -1> = {
-      title: sortOrder === "asc" ? 1 : -1,
-      price: sortOrder === "asc" ? 1 : -1,
-      startDate: sortOrder === "asc" ? 1 : -1,
-      endDate: sortOrder === "asc" ? 1 : -1,
-      language: sortOrder === "asc" ? 1 : -1,
-      durationInWeeks: sortOrder === "asc" ? 1 : -1,
-    };
+    const allowedSortFields = [
+      "title",
+      "price",
+      "startDate",
+      "endDate",
+      "language",
+      "durationInWeeks",
+    ];
 
-    const sortField = allowedSortFields[sortBy];
-    if (sortField !== undefined) {
-      modelQuery = modelQuery.sort({ [sortBy]: sortField });
+    if (allowedSortFields.includes(sortBy)) {
+      const sortOrder = queryObj.sortOrder === "desc" ? -1 : 1;
+      modelQuery = modelQuery.sort({ [sortBy]: sortOrder });
     }
   }
   const page = parseInt(rawPage, 10);
