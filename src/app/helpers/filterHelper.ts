@@ -65,7 +65,7 @@ export const filter = async <T>(
     });
   }
 
-  if (sortBy !== undefined && sortOrder !== undefined) {
+  if (sortBy !== undefined) {
     const allowedSortFields = [
       "title",
       "price",
@@ -76,8 +76,8 @@ export const filter = async <T>(
     ];
 
     if (allowedSortFields.includes(sortBy)) {
-      const sortOrder = queryObj.sortOrder === "desc" ? -1 : 1;
-      modelQuery = modelQuery.sort({ [sortBy]: sortOrder });
+      const sortOrderVal = (sortOrder !== undefined && sortOrder === 'desc') ? -1 : 1;
+      modelQuery = modelQuery.find().sort({ [sortBy]: sortOrderVal });
     }
   }
   const page = parseInt(rawPage, 10);
