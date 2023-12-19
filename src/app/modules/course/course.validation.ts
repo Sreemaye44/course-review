@@ -27,32 +27,44 @@ const updateCourseSchemaValidation = z.object({
       description: z.string().optional(),
     })
     .optional(),
-  durationInWeeks: z.number().optional(), // This field will be calculated and validated dynamically
+  // This field will be calculated and validated dynamically
 });
 const createCourseSchemaValidation = z.object({
-  body: z.object({
-    title: z.string({
-      invalid_type_error: "Title must be string",
-      required_error: "Title is required",
-    }),
-    instructor: z.string(),
-    categoryId: z.string(), // Assuming categoryId is a string type
-    price: z.number().min(0),
-    tags: z.array(
-      z.object({
-        name: z.string(),
-        isDeleted: z.boolean().optional(),
-      })
+  body: z
+    .object({
+      title: z.string({
+        invalid_type_error: "Title must be string",
+        required_error: "Title is required",
+      }),
+      instructor: z.string(),
+      categoryId: z.string(), // Assuming categoryId is a string type
+      price: z.number().min(0),
+      tags: z.array(
+        z.object({
+          name: z.string(),
+          isDeleted: z.boolean().optional(),
+        })
+      ),
+      startDate: z.string(),
+      endDate: z.string(),
+      language: z.string(),
+      provider: z.string(),
+      details: z.object({
+        level: z.enum(["Beginner", "Intermediate", "Advanced"]),
+        description: z.string().optional(),
+      }),
+    })
+    .refine(
+      (data) => {
+        if (data.startDate && data.endDate) {
+          return new Date(data.startDate) < new Date(data.endDate);
+        }
+        return true;
+      },
+      {
+        message: "Start date must be before end date",
+      }
     ),
-    startDate: z.string(),
-    endDate: z.string(),
-    language: z.string(),
-    provider: z.string(),
-    details: z.object({
-      level: z.enum(["Beginner", "Intermediate", "Advanced"]),
-      description: z.string().optional(),
-    }),
-  }),
 
   // This field will be calculated and validated dynamically
 });
