@@ -15,13 +15,17 @@ const createCourse = catchAsync(async (req, res) => {
 });
 
 const getAllCourses = catchAsync(async (req, res, next) => {
-  console.log(req.query);
   const result = await CourseServices.getAllCoursesFromDB(req.query);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Courses retrieved successfully",
-    data: result,
+    meta: {
+      page: result.meta.page,
+      limit: result.meta.limit,
+      total: result.data.length,
+    },
+    data: result.data,
   });
 });
 const updateCourse = catchAsync(async (req, res, next) => {

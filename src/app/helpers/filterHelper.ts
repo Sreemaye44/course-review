@@ -1,10 +1,16 @@
 import { Query } from "mongoose";
 import { TQueryObject } from "../interface/queryObject";
-
-export const filter = <T>(
+export interface FilteredData<T> {
+  data: T[];
+  meta: {
+    page: number;
+    limit: number;
+  };
+}
+export const filter = async <T>(
   modelQuery: Query<T[], T>,
   queryObj: TQueryObject
-) => {
+): Promise<FilteredData<T>> => {
   const excludedFields = [
     "page",
     "searchTerm",
@@ -60,24 +66,36 @@ export const filter = <T>(
   }
 
   if (sortBy !== undefined && sortOrder !== undefined) {
-    const allowedSortFields = [
-      "title",
-      "price",
-      "startDate",
-      "endDate",
-      "language",
-      "durationInWeeks",
-    ];
+    const allowedSortFields: Record<string, 1 | -1> = {
+      title: sortOrder === "asc" ? 1 : -1,
+      price: sortOrder === "asc" ? 1 : -1,
+      startDate: sortOrder === "asc" ? 1 : -1,
+      endDate: sortOrder === "asc" ? 1 : -1,
+      language: sortOrder === "asc" ? 1 : -1,
+      durationInWeeks: sortOrder === "asc" ? 1 : -1,
+    };
 
-    if (allowedSortFields.includes(sortBy)) {
-      const sortOrder = queryObj.sortOrder === "desc" ? -1 : 1;
-      modelQuery = modelQuery.sort({ [sortBy]: sortOrder });
+    const sortField = allowedSortFields[sortBy];
+    if (sortField !== undefined) {
+      modelQuery = modelQuery.sort({ [sortBy]: sortField });
     }
   }
   const page = parseInt(rawPage, 10);
   const limit = parseInt(rawLimit, 10);
-  const startIndex = (page - 1) * limit; // Calculate the starting index for pagination
-  modelQuery = modelQuery.skip(startIndex).limit(limit); // Apply pagination
 
-  return modelQuery;
+  const clonedQuery = modelQuery.clone(); // Clone the query to get total count
+  const totalQuery = await clonedQuery.model.countDocuments();
+
+  const startIndex = (page - 1) * limit;
+  // Calculate the starting index for pagination
+  const data = await modelQuery.skip(startIndex).limit(limit);
+  const metaData = {
+    page,
+    limit,
+  }; // Apply pagination
+
+  return {
+    data,
+    meta: metaData,
+  };
 };

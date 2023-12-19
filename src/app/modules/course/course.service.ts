@@ -10,6 +10,7 @@ const createCourseIntoDB = async (payload: TCourse) => {
 
 const getAllCoursesFromDB = async (payload: any) => {
   const result = await filter(Course.find(), payload);
+
   return result;
 };
 
