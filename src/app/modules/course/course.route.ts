@@ -9,7 +9,7 @@ router.post(
   courseControllers.createCourse
 );
 router.get("/courses", courseControllers.getAllCourses);
-router.get("/courses/:courseId", courseControllers.getSingleCourse);
+router.get("/courses/:courseId/reviews", courseControllers.getSingleCourse);
 router.put(
   "/courses/:courseId",
   validateRequest(CourseSchemaValidation.updateCourseSchemaValidation),
