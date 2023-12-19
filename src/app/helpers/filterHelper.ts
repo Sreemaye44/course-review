@@ -22,6 +22,10 @@ export const filter = <T>(
     level,
     startDate,
     endDate,
+    sortOrder,
+    page: rawPage = "1",
+    limit: rawLimit = "10",
+
     ...restQuery
   } = queryObj;
   excludedFields.forEach((keyword) => delete queryObj[keyword]);
@@ -55,7 +59,7 @@ export const filter = <T>(
     });
   }
 
-  if (sortBy !== undefined) {
+  if (sortBy !== undefined && sortOrder !== undefined) {
     const allowedSortFields = [
       "title",
       "price",
@@ -70,6 +74,10 @@ export const filter = <T>(
       modelQuery = modelQuery.sort({ [sortBy]: sortOrder });
     }
   }
+  const page = parseInt(rawPage, 10);
+  const limit = parseInt(rawLimit, 10);
+  const startIndex = (page - 1) * limit; // Calculate the starting index for pagination
+  modelQuery = modelQuery.skip(startIndex).limit(limit); // Apply pagination
 
   return modelQuery;
 };
